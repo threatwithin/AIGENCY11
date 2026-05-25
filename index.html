@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AIGENCY11 — A bold holding company. We build brands bold and secure them from the start.">
+<title>AIGENCY11 — Where Brands Are Born</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #05030f;
+    --deep: #0a0620;
+    --nebula-purple: #6c35de;
+    --nebula-magenta: #c42b8e;
+    --nebula-teal: #0ecfc4;
+    --nebula-pink: #e040a0;
+    --star-white: #f0eaff;
+    --muted: rgba(240,234,255,0.5);
+    --faint: rgba(240,234,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--star-white);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  #starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #nebula-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  main { position: relative; z-index: 2; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 3rem;
+    background: linear-gradient(to bottom, rgba(5,3,15,0.9), transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+    background: linear-gradient(135deg, var(--nebula-teal), var(--nebula-purple), var(--nebula-magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+  }
+
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: color 0.3s;
+  }
+
+  nav a:hover { color: var(--star-white); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--nebula-teal);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 14vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .glow-purple {
+    background: linear-gradient(135deg, #a78bfa, var(--nebula-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-teal {
+    background: linear-gradient(135deg, var(--nebula-teal), #67e8f9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    font-weight: 400;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.9s forwards;
+  }
+
+  .hero-sub strong { color: var(--star-white); font-weight: 700; }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.2s forwards;
+  }
+
+  .btn-primary {
+    padding: 0.9rem 2.5rem;
+    background: linear-gradient(135deg, var(--nebula-purple), var(--nebula-magenta));
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: transform 0.2s, opacity 0.2s;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  .btn-ghost {
+    padding: 0.9rem 2.5rem;
+    background: transparent;
+    color: var(--star-white);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    border: 1px solid var(--faint);
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .btn-ghost:hover { border-color: var(--nebula-teal); transform: translateY(-2px); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeUp 1s ease 2s forwards;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .scroll-hint span {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--nebula-teal), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 7rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--nebula-teal);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
+  }
+
+  /* PILLARS */
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 4rem;
+  }
+
+  .pillar {
+    padding: 3rem 2.5rem;
+    background: rgba(108,53,222,0.06);
+    border: 1px solid rgba(108,53,222,0.15);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+
+  .pillar:hover { background: rgba(108,53,222,0.12); }
+
+  .pillar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+  }
+
+  .pillar:nth-child(1)::before { background: var(--nebula-purple); }
+  .pillar:nth-child(2)::before { background: var(--nebula-teal); }
+  .pillar:nth-child(3)::before { background: var(--nebula-magenta); }
+  .pillar:nth-child(4)::before { background: #a78bfa; }
+
+  .pillar-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--faint);
+    margin-bottom: 1rem;
+  }
+
+  .pillar h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    color: var(--star-white);
+  }
+
+  .pillar p { color: var(--muted); font-size: 0.9rem; line-height: 1.8; }
+
+  /* BRANDS */
+  .brands-section {
+    padding: 7rem 3rem;
+    background: rgba(14,207,196,0.03);
+    border-top: 1px solid var(--faint);
+    border-bottom: 1px solid var(--faint);
+  }
+
+  .brands-inner { max-width: 1100px; margin: 0 auto; }
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .brand-card {
+    padding: 2.5rem 2rem;
+    border: 1px solid var(--faint);
+    background: rgba(255,255,255,0.02);
+    position: relative;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .brand-card:hover { transform: translateY(-4px); border-color: rgba(108,53,222,0.4); }
+  .brand-card.active { border-color: rgba(14,207,196,0.4); }
+  .brand-card.coming-soon { opacity: 0.4; }
+
+  .brand-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    padding: 0.3rem 0.8rem;
+    border-radius: 1px;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  .tag-active { background: rgba(14,207,196,0.1); color: var(--nebula-teal); }
+  .tag-coming { background: rgba(108,53,222,0.1); color: #a78bfa; }
+
+  .brand-card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .brand-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+  .brand-card a.brand-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--nebula-teal);
+    text-decoration: none;
+    font-weight: 700;
+    transition: opacity 0.2s;
+  }
+
+  .brand-card a.brand-link:hover { opacity: 0.7; }
+
+  .brand-orbit {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-orbit-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--nebula-teal);
+    animation: orbitPulse 2s ease infinite;
+  }
+
+  /* WHY */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-top: 4rem;
+  }
+
+  .why-item h3 {
+    font-size: 2.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    background: linear-gradient(135deg, var(--nebula-purple), var(--nebula-teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .why-item .why-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    color: var(--star-white);
+  }
+
+  .why-item p { font-size: 0.85rem; color: var(--muted); line-height: 1.8; }
+
+  /* FOOTER */
+  .cosmic-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--nebula-purple), var(--nebula-teal), transparent);
+    margin: 0 3rem;
+  }
+
+  footer {
+    border-top: 1px solid var(--faint);
+    padding: 3rem;
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+    background: linear-gradient(135deg, var(--nebula-teal), var(--nebula-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  footer p { font-size: 0.75rem; color: var(--faint); letter-spacing: 0.1em; line-height: 2; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes orbitPulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.4); opacity: 1; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1.2rem 1.5rem; }
+    nav ul { gap: 1.5rem; }
+    section { padding: 5rem 1.5rem; }
+    .pillars { grid-template-columns: 1fr; }
+    .brands-grid { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .brands-section { padding: 5rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; }
+    .cosmic-divider { margin: 0 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<canvas id="nebula-canvas"></canvas>
+
+<main>
+  <nav>
+    <a href="#" class="logo">AIGENCY11</a>
+    <ul>
+      <li><a href="#what-we-do">What We Do</a></li>
+      <li><a href="#brands">Our Brands</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <p class="hero-eyebrow">A Bold Holding Company</p>
+    <h1 class="hero-title">
+      <span class="glow-purple">WHERE</span><br>
+      <span style="color:var(--star-white)">BRANDS</span><br>
+      <span class="glow-teal">ARE BORN</span>
+    </h1>
+    <p class="hero-sub">
+      We build them <strong>bold</strong>. We secure them <strong>from the start</strong>.<br>
+      Not your grandmother's holding company.
+    </p>
+    <div class="hero-cta">
+      <a href="#brands" class="btn-primary">Our Brands</a>
+      <a href="#what-we-do" class="btn-ghost">What We Do</a>
+    </div>
+    <div class="scroll-hint">
+      <span>Explore</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+  <section id="what-we-do">
+    <p class="section-label">// What We Do</p>
+    <h2 class="section-title">TWO PILLARS.<br>ONE PHILOSOPHY.</h2>
+    <p style="color:var(--muted);font-size:1rem;max-width:560px;line-height:1.9;">
+      Every brand under AIGENCY11 is built on the same foundation — bold creative identity fused with a security culture baked in from day one.
+    </p>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-num">01</div>
+        <h3>Brand Architecture</h3>
+        <p>We don't build logos. We build identities — positioning, voice, visual language, and the full ecosystem a brand needs to stand on its own.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">02</div>
+        <h3>Security Culture</h3>
+        <p>Every brand we house is secured from inception. We embed cybersecurity thinking into operations — not as an afterthought, as a foundation.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">03</div>
+        <h3>Brand Operations</h3>
+        <p>Strategy without execution is just dreaming. We build the infrastructure — systems, workflows, and the people — to run it all properly.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">04</div>
+        <h3>Growth Support</h3>
+        <p>Quarterly reviews, direct access to senior expertise, and ongoing partner support. The same people every time — not a helpdesk ticket.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cosmic-divider"></div>
+
+  <div class="brands-section" id="brands">
+    <div class="brands-inner">
+      <p class="section-label">// Our Brands</p>
+      <h2 class="section-title">STARS IN THE FORGE</h2>
+      <p style="color:var(--muted);font-size:1rem;max-width:560px;line-height:1.9;">
+        Each brand under AIGENCY11 is a distinct star — its own identity, its own orbit — all born from the same cosmic forge.
+      </p>
+      <div class="brands-grid">
+        <div class="brand-card active">
+          <div class="brand-tag tag-active">Live</div>
+          <h3>Shadow Signal Group</h3>
+          <p>Enterprise-grade cybersecurity consulting for SMBs. No jargon. No upselling. Just the work.</p>
+          <a href="https://shadowsignalgroup.com" class="brand-link" target="_blank" rel="noopener">Visit →</a>
+          <div class="brand-orbit"><div class="brand-orbit-dot"></div></div>
+        </div>
+        <div class="brand-card coming-soon">
+          <div class="brand-tag tag-coming">Coming Soon</div>
+          <h3>Brand 02</h3>
+          <p>Another star being born inside the forge. Details coming soon.</p>
+          <div class="brand-orbit"><div class="brand-orbit-dot" style="background:#a78bfa;"></div></div>
+        </div>
+        <div class="brand-card coming-soon">
+          <div class="brand-tag tag-coming">Coming Soon</div>
+          <h3>Brand 03</h3>
+          <p>The forge is always burning. Another identity taking shape.</p>
+          <div class="brand-orbit"><div class="brand-orbit-dot" style="background:var(--nebula-magenta);"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cosmic-divider"></div>
+
+  <section>
+    <p class="section-label">// Why It Matters</p>
+    <h2 class="section-title">THE NUMBERS<br>DON'T LIE</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <h3>83%</h3>
+        <div class="why-label">Of breaches involve SMBs</div>
+        <p>Most brands are born without a security plan. We change that from day one.</p>
+      </div>
+      <div class="why-item">
+        <h3>$200K+</h3>
+        <div class="why-label">Average breach cost for SMBs</div>
+        <p>A brand without security culture is a liability waiting to become a headline.</p>
+      </div>
+      <div class="why-item">
+        <h3>Day 1</h3>
+        <div class="why-label">When we start securing brands</div>
+        <p>Not after the breach. Not after launch. Before the first post goes live.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cosmic-divider"></div>
+
+  <section id="contact" style="text-align:center;">
+    <p class="section-label">// Contact</p>
+    <h2 class="section-title">LET'S TALK</h2>
+    <p style="color:var(--muted);font-size:1rem;max-width:480px;line-height:1.9;margin:0 auto 2.5rem;">
+      A new brand forming? A security gap to close? An idea that needs a forge?
+    </p>
+    <a href="mailto:outreach@aigency11.com" class="btn-primary">outreach@aigency11.com</a>
+  </section>
+
+  <div class="cosmic-divider"></div>
+
+  <footer>
+    <div class="footer-logo">AIGENCY11</div>
+    <p>Oklahoma City &amp; Tulsa, OK</p>
+    <p>Holding company. Brand forge. Cosmic foundation.</p>
+    <p style="margin-top:1.5rem;font-size:0.65rem;letter-spacing:0.2em;">
+      SHADOW SIGNAL GROUP is Powered by AIGENCY11 &nbsp;·&nbsp; All brands are Powered by AIGENCY11
+    </p>
+  </footer>
+</main>
+
+<script>
+const starCanvas = document.getElementById('starfield');
+const sc = starCanvas.getContext('2d');
+const nebulaCanvas = document.getElementById('nebula-canvas');
+const nc = nebulaCanvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  starCanvas.width = nebulaCanvas.width = window.innerWidth;
+  starCanvas.height = nebulaCanvas.height = window.innerHeight;
+  initStars();
+  drawNebula();
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 280; i++) {
+    stars.push({
+      x: Math.random() * starCanvas.width,
+      y: Math.random() * starCanvas.height,
+      r: Math.random() * 1.2 + 0.2,
+      speed: Math.random() * 0.008 + 0.002,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function animateStars(t) {
+  sc.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  stars.forEach(s => {
+    const a = 0.15 + 0.7 * (0.5 + 0.5 * Math.sin(s.phase + t * s.speed));
+    sc.beginPath();
+    sc.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    sc.fillStyle = `rgba(240,234,255,${a})`;
+    sc.fill();
+  });
+  requestAnimationFrame(animateStars);
+}
+
+function drawNebula() {
+  nc.clearRect(0, 0, nebulaCanvas.width, nebulaCanvas.height);
+  const W = nebulaCanvas.width, H = nebulaCanvas.height;
+  [
+    { x: W*0.2, y: H*0.25, r: W*0.38, c: [108,53,222], a: 0.09 },
+    { x: W*0.8, y: H*0.2,  r: W*0.3,  c: [196,43,142], a: 0.07 },
+    { x: W*0.5, y: H*0.6,  r: W*0.35, c: [14,207,196], a: 0.06 },
+    { x: W*0.75,y: H*0.75, r: W*0.25, c: [164,100,240],a: 0.08 },
+    { x: W*0.15,y: H*0.75, r: W*0.28, c: [224,64,160], a: 0.05 },
+  ].forEach(b => {
+    const g = nc.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+    g.addColorStop(0, `rgba(${b.c},${b.a})`);
+    g.addColorStop(1, `rgba(${b.c},0)`);
+    nc.beginPath();
+    nc.arc(b.x, b.y, b.r, 0, Math.PI*2);
+    nc.fillStyle = g;
+    nc.fill();
+  });
+}
+
+resize();
+window.addEventListener('resize', resize);
+requestAnimationFrame(animateStars);
+</script>
+</body>
+</html>
